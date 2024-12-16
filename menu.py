@@ -7,7 +7,7 @@ screen.fill((136, 162, 193))
 font = pygame.font.Font("font/Super Sense.ttf", 100)
 titre = font.render("Des mineurs", 1, (255, 255, 255))
 boutton_play = pygame.image.load("image/play.png").convert_alpha()
-boutton_play = pygame.transform.scale(boutton_play, (1200, 1200))
+boutton_play = pygame.transform.scale(boutton_play, (400, 200))
 rect = boutton_play.get_rect()
 
 
