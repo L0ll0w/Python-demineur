@@ -9,3 +9,8 @@ while continuer:
         if event.type == pygame.KEYDOWN:
             continuer = False
 pygame.quit()
+
+def mai(Widht = 560, Height=700, Title="Démineur"):
+    screen = pygame.display.set_mode((Widht, Height))
+    pygame.display.set_caption(Title)
+    Mine
