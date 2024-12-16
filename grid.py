@@ -30,6 +30,16 @@ class Grid:
     def afficher_tableau(self):
         for ligne in self.tableau:
             print(' '.join(str(cell) for cell in ligne))
+    def indice_mine(self):
+        tab_mine_indice = []
+        for i in range(self.rows):
+            for j in range(self.cols):
+                if self.tableau[i][j] == 'B':
+                    tab_mine_indice.append((i, j))
+        print(f"Position des mines :  {tab_mine_indice}")
+        return tab_mine_indice
+
+
 
 
 class Game:
@@ -45,6 +55,7 @@ class Game:
             self.demander_niveau()
             self.grid = Grid(self.niveau)
             self.grid.afficher_tableau()
+            self.grid.indice_mine()
         except ValueError as e:
             print(e)
             print("Veuillez recommencer.")
@@ -53,6 +64,7 @@ class Game:
 if __name__ == "__main__":
     jeu = Game()
     jeu.demarrer()
+
 
 
 
