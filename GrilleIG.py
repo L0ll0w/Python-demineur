@@ -76,9 +76,12 @@ CellCount = WIDTH // GridSize
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (192, 192, 192)
+BLUE = (0, 0, 255)
 
 # Grille pour les drapeaux
 flags = [[0] * CellCount for _ in range(CellCount)]
+clicked_cells = [[0] * CellCount for _ in range(CellCount)]
+
 
 
 def draw_grid(screen):
@@ -102,6 +105,8 @@ def main():
     image_bomb = pygame.transform.scale(image_bomb, (GridSize, GridSize))
 
     mines_positions = jeu.grid.indice_mine()
+    tableau = jeu.grid.creer_tableau()
+
     running = True
     while running:
         screen.fill(WHITE)
@@ -112,6 +117,11 @@ def main():
             for col in range(CellCount):
                 if flags[row][col] == 1:
                     screen.blit(image_flag, (col * GridSize, row * GridSize))
+
+        for row in range(CellCount):
+            for col in range(CellCount):
+                if clicked_cells[row][col] == 1:
+                    pygame.draw.rect(screen, BLUE, pygame.Rect(col * GridSize, row * GridSize, GridSize, GridSize))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -125,15 +135,27 @@ def main():
                     print(f"Drapeau ({row}, {col})")
 
                 elif event.button == 1:  # Clic gauche : vérifier une case
+
                     if (row, col) in mines_positions:
                         print(f"Bombe ({row}, {col})")
                         print("Game Over")
                         for r, c in mines_positions:
+
                             screen.blit(image_bomb, (c * GridSize, r * GridSize))
+
                         pygame.display.flip()
-                        pygame.time.wait(2000)
+                        pygame.time.delay(2000)
 
                         running = False
+                    else:
+                        clicked_cells[row][col] = 1
+
+
+
+
+
+
+
 
         pygame.display.flip()
         clock.tick(10)
