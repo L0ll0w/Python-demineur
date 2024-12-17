@@ -1,4 +1,5 @@
 import pygame
+from game import start_game
 
 pygame.init()
 
@@ -82,14 +83,10 @@ class Menu:
                 font = pygame.font.Font("font/Super Sense.ttf", 50)
                 screen.blit(font.render("Difficulty :", 1, (255, 255, 255)), (115, 250))
                 font = pygame.font.Font("font/Super Sense.ttf", 70)
-                screen.blit(font.render("W = ", 1, (255, 255, 255)), (600, 250))
-                screen.blit(font.render("H = ", 1, (255, 255, 255)), (900, 250))
-                screen.blit(font.render("Mines = ", 1, (255, 255, 255)), (1200, 250))
-
                 w, h, mines = list(self.difficulties.values())[self.selected_difficulty]
-                screen.blit(font.render(str(w), 1, (255, 255, 255)), (750, 250))
-                screen.blit(font.render(str(h), 1, (255, 255, 255)), (1035, 250))
-                screen.blit(font.render(str(mines), 1, (255, 255, 255)), (1520, 250))
+                screen.blit(font.render(f"W = {w}", 1, (255, 255, 255)), (600, 250))
+                screen.blit(font.render(f"H = {h}", 1, (255, 255, 255)), (900, 250))
+                screen.blit(font.render(f"Mines = {mines}", 1, (255, 255, 255)), (1200, 250))
 
                 screen.blit(boutton_back, back_position)
                 screen.blit(boutton_play, play_position2)
@@ -117,6 +114,11 @@ class Menu:
                             # start_game()
                             print("launch game")
                             screen.blit(font.render("LES MINEURS", 1, (255, 255, 255)), (800, 550))
+                            difficulty = list(self.difficulties.keys())[self.selected_difficulty]
+                            w, h, mines = self.difficulties[difficulty]
+
+                            # Lancer le jeu avec les paramètres de difficulté
+                            start_game(w, h, mines)
 
                         for i, pos in enumerate(self.radio_positions):
                             distance = ((mouse[0] - pos[0]) ** 2 + (mouse[1] - pos[1]) ** 2) ** 0.5
