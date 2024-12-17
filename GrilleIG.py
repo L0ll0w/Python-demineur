@@ -10,7 +10,7 @@ class Grid:
 
     def get_dimensions_and_mines(self):
         niveaux = {
-            "Easy": (10, 10, 10, 1),
+            "Easy": (10, 10, 0, 1),
             "Medium": (20, 20, 40, 2),
             "Hard": (45, 45, 99, 3),
         }
@@ -109,9 +109,25 @@ def check_victory():
                 return False
     return True
 
+
+
+def score():
+    score_compt = 0
+    for row in range(CellCount):
+        for col in range(CellCount):
+            if clicked_cells[row][col] == 1:
+                score_compt += 1
+    return score_compt
+
+
+
+
+
+
 def main():
     pygame.init()
-    font = pygame.font.Font(None, 100)
+    font = pygame.font.Font(None, 30)
+
 
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Démineur")
@@ -123,8 +139,8 @@ def main():
     image_bomb = pygame.image.load("image/bombFR.png").convert_alpha()
     image_bomb = pygame.transform.scale(image_bomb, (GridSize, GridSize))
     game_screen = True
-    tableau = jeu.grid.creer_tableau()
 
+    grid = Grid(jeu.grid.niveau)
     running = True
     while running:
         if game_screen:
@@ -154,7 +170,6 @@ def main():
                         print(f"Drapeau ({row}, {col})")
 
                     elif event.button == 1:  # Clic gauche : vérifier une case
-
                         if (row, col) in mines_positions:
                             print(f"Bombe ({row}, {col})")
                             print("Game Over")
@@ -175,7 +190,7 @@ def main():
                         game_screen = False
         else:
             screen.fill(WHITE)
-            screen.blit(font.render("VICTOIRE", 1, (255, 0, 0)), (100,100 ))
+            screen.blit(font.render(f"VICTOIRE score : {score()}, {grid.niveau}", 1, (255, 0, 0)), (85,100 ))
             pygame.display.flip()
 
             for event in pygame.event.get():
