@@ -2,6 +2,7 @@ import pygame
 import sys
 from random import sample
 
+
 class Grid:
     def __init__(self, niveau):
         self.niveau = niveau
@@ -10,7 +11,7 @@ class Grid:
 
     def get_dimensions_and_mines(self):
         niveaux = {
-            "Easy": (10, 10, 0, 1),
+            "Easy": (10, 10, 10, 1),
             "Medium": (20, 20, 40, 2),
             "Hard": (45, 45, 99, 3),
         }
@@ -103,9 +104,9 @@ mines_positions = jeu.grid.indice_mine()
 def check_victory():
     for row in range(CellCount):
         for col in range(CellCount):
-            if (row, col) in mines_positions and flags[row][col] != 1:
-                return False
-            if (row, col) not in mines_positions and clicked_cells[row][col] != 1:
+            if (row, col) in mines_positions:
+                continue
+            if clicked_cells[row][col] != 1:
                 return False
     return True
 
@@ -193,13 +194,16 @@ def main():
             screen.blit(font.render(f"VICTOIRE score : {score()}, {grid.niveau}", 1, (255, 0, 0)), (85,100 ))
             pygame.display.flip()
 
+
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
 
 
+
+
         pygame.display.flip()
-        clock.tick(10)
 
     pygame.quit()
     sys.exit()
