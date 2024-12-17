@@ -88,8 +88,8 @@ class Menu:
 
                 w, h, mines = list(self.difficulties.values())[self.selected_difficulty]
                 screen.blit(font.render(str(w), 1, (255, 255, 255)), (750, 250))
-                screen.blit(font.render(str(h), 1, (255, 255, 255)), (1050, 250))
-                screen.blit(font.render(str(mines), 1, (255, 255, 255)), (1550, 250))
+                screen.blit(font.render(str(h), 1, (255, 255, 255)), (1035, 250))
+                screen.blit(font.render(str(mines), 1, (255, 255, 255)), (1520, 250))
 
                 screen.blit(boutton_back, back_position)
                 screen.blit(boutton_play, play_position2)
