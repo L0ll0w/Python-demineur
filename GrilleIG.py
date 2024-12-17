@@ -30,7 +30,14 @@ class Grid:
             print(' '.join(str(cell) for cell in ligne))
 
     def indice_mine(self):
-        return [(i, j) for i in range(self.rows) for j in range(self.cols) if self.tableau[i][j] == 'B']
+        tab =[]
+        for i in range(self.rows):
+            for j in range(self.cols):
+                if self.tableau[i][j] == 'B':
+                    tab.append((i,j))
+        print(f"Position mines : {tab}")
+        return tab
+
 
 
 class Game:
@@ -91,6 +98,16 @@ def draw_grid(screen):
             pygame.draw.rect(screen, GRAY, rect)
             pygame.draw.rect(screen, BLACK, rect, 2)
 
+mines_positions = jeu.grid.indice_mine()
+
+def check_victory():
+    for row in range(CellCount):
+        for col in range(CellCount):
+            if (row, col) in mines_positions and flags[row][col] != 1:
+                return False
+            if (row, col) not in mines_positions and clicked_cells[row][col] != 1:
+                return False
+    return True
 
 def main():
     pygame.init()
@@ -104,7 +121,6 @@ def main():
     image_bomb = pygame.image.load("image/bombFR.png").convert_alpha()
     image_bomb = pygame.transform.scale(image_bomb, (GridSize, GridSize))
 
-    mines_positions = jeu.grid.indice_mine()
     tableau = jeu.grid.creer_tableau()
 
     running = True
@@ -149,6 +165,11 @@ def main():
                         running = False
                     else:
                         clicked_cells[row][col] = 1
+                if check_victory():
+                    print("Félicitations ! Vous avez gagné !")
+                    pygame.display.set_caption("Victoire ! Bravo !")
+                    pygame.time.wait(2000)
+                    running = False
 
 
 
