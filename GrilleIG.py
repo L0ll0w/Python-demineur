@@ -111,6 +111,8 @@ def check_victory():
 
 def main():
     pygame.init()
+    font = pygame.font.Font(None, 100)
+
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Démineur")
     clock = pygame.time.Clock()
@@ -120,62 +122,65 @@ def main():
     image_flag = pygame.transform.scale(image_flag, (GridSize, GridSize))
     image_bomb = pygame.image.load("image/bombFR.png").convert_alpha()
     image_bomb = pygame.transform.scale(image_bomb, (GridSize, GridSize))
-
+    game_screen = True
     tableau = jeu.grid.creer_tableau()
 
     running = True
     while running:
-        screen.fill(WHITE)
-        draw_grid(screen)
+        if game_screen:
+            screen.fill(WHITE)
+            draw_grid(screen)
 
-        # Dessiner les drapeaux
-        for row in range(CellCount):
-            for col in range(CellCount):
-                if flags[row][col] == 1:
-                    screen.blit(image_flag, (col * GridSize, row * GridSize))
+            # Dessiner les drapeaux
+            for row in range(CellCount):
+                for col in range(CellCount):
+                    if flags[row][col] == 1:
+                        screen.blit(image_flag, (col * GridSize, row * GridSize))
 
-        for row in range(CellCount):
-            for col in range(CellCount):
-                if clicked_cells[row][col] == 1:
-                    pygame.draw.rect(screen, BLUE, pygame.Rect(col * GridSize, row * GridSize, GridSize, GridSize))
+            for row in range(CellCount):
+                for col in range(CellCount):
+                    if clicked_cells[row][col] == 1:
+                        pygame.draw.rect(screen, BLUE, pygame.Rect(col * GridSize, row * GridSize, GridSize, GridSize))
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                x, y = event.pos
-                row, col = y // GridSize, x // GridSize
-
-                if event.button == 3:  # Clic droit : poser/retirer un drapeau
-                    flags[row][col] = 1 - flags[row][col]
-                    print(f"Drapeau ({row}, {col})")
-
-                elif event.button == 1:  # Clic gauche : vérifier une case
-
-                    if (row, col) in mines_positions:
-                        print(f"Bombe ({row}, {col})")
-                        print("Game Over")
-                        for r, c in mines_positions:
-
-                            screen.blit(image_bomb, (c * GridSize, r * GridSize))
-
-                        pygame.display.flip()
-                        pygame.time.delay(2000)
-
-                        running = False
-                    else:
-                        clicked_cells[row][col] = 1
-                if check_victory():
-                    print("Félicitations ! Vous avez gagné !")
-                    pygame.display.set_caption("Victoire ! Bravo !")
-                    pygame.time.wait(2000)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
                     running = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    x, y = event.pos
+                    row, col = y // GridSize, x // GridSize
 
+                    if event.button == 3:  # Clic droit : poser/retirer un drapeau
+                        flags[row][col] = 1 - flags[row][col]
+                        print(f"Drapeau ({row}, {col})")
 
+                    elif event.button == 1:  # Clic gauche : vérifier une case
 
+                        if (row, col) in mines_positions:
+                            print(f"Bombe ({row}, {col})")
+                            print("Game Over")
+                            for r, c in mines_positions:
 
+                                screen.blit(image_bomb, (c * GridSize, r * GridSize))
 
+                            pygame.display.flip()
+                            pygame.time.delay(2000)
 
+                            running = False
+                        else:
+                            clicked_cells[row][col] = 1
+                    if check_victory():
+                        print("Félicitations ! Vous avez gagné !")
+                        pygame.display.set_caption("Victoire ! Bravo !")
+                        pygame.time.wait(200)
+                        game_screen = False
+        else:
+            screen.fill(WHITE)
+            screen.blit(font.render("VICTOIRE", 1, (255, 0, 0)), (100,100 ))
+            pygame.display.flip()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
 
 
         pygame.display.flip()
