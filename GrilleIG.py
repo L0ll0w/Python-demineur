@@ -1,3 +1,5 @@
+from idlelib.debugobj import dispatch
+
 import pygame
 import sys
 from random import sample
@@ -90,7 +92,8 @@ BLUE = (0, 0, 255)
 
 # Grille pour les drapeaux
 flags = [[0] * CellCount for _ in range(CellCount)]
-clicked_cells = [[1] * CellCount for _ in range(CellCount)]
+clicked_cells = [[0] * CellCount for _ in range(CellCount)]
+
 
 
 
@@ -131,8 +134,24 @@ def score():
     return score_compt
 
 
+def reveal_cells(row, col):
+    # Vérifie les limites de la grille
+    if row < 0 or row >= CellCount or col < 0 or col >= CellCount:
+        return
 
+    # Arrête la récursion si la case est déjà cliquée ou contient une bombe
+    if clicked_cells[row][col] == 1 or (row, col) in mines_positions:
+        return
 
+    # Colorie la case actuelle
+    clicked_cells[row][col] = 1
+
+    # Liste des directions pour explorer les cases adjacentes
+    directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+
+    # Révélation récursive des cases adjacentes
+    for dx, dy in directions:
+        reveal_cells(row + dx, col + dy)
 
 
 def main():
@@ -167,7 +186,8 @@ def main():
             for row in range(CellCount):
                 for col in range(CellCount):
                     if clicked_cells[row][col] == 1:
-                        pygame.draw.rect(screen, BLUE, pygame.Rect(col * GridSize, row * GridSize, GridSize, GridSize))
+                        pygame.draw.rect(screen, pygame.Color('blue'), pygame.Rect(col * GridSize, row * GridSize, GridSize, GridSize))
+                        pygame.draw.rect(screen, BLACK, pygame.Rect(col * GridSize, row * GridSize, GridSize, GridSize), 2)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -180,27 +200,47 @@ def main():
                         flags[row][col] = 1 - flags[row][col]
                         print(f"Drapeau ({row}, {col})")
 
-                    elif event.button == 1:  # Clic gauche : vérifier une case
-                        if (row, col) in mines_positions:
-                            print(f"Bombe ({row}, {col})")
-                            print("Game Over")
-                            for r, c in mines_positions:
 
+
+                    elif event.button == 1:  # Clic gauche : vérifier une case
+
+                        if (row, col) in mines_positions:
+
+                            print(f"Bombe ({row}, {col})")
+
+                            print("Game Over")
+
+                            for r, c in mines_positions:
                                 screen.blit(image_bomb, (c * GridSize, r * GridSize))
 
                             pygame.display.flip()
-                            pygame.time.delay(2000)
+
 
                             running = False
+
                         else:
-                            clicked_cells[row][col] = 1
+
+                            # Démarre la révélation des cases à partir de la case cliquée
+
+                            reveal_cells(row, col)
+
+
+
+
+
                     if check_victory():
+                        clock.tick(20)
+
+                        for r, c in mines_positions:
+                            screen.blit(image_bomb, (c * GridSize, r * GridSize))
+                            pygame.display.flip()
+
                         print("Félicitations ! Vous avez gagné !")
                         pygame.display.set_caption("Victoire ! Bravo !")
-                        pygame.time.wait(200)
                         game_screen = False
-        else:
 
+
+        else:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
