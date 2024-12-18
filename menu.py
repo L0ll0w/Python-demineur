@@ -1,4 +1,10 @@
 import pygame
+import csv
+
+
+with open('stats.csv', 'r') as file:
+    reader = csv.reader(file, delimiter=';')
+
 
 pygame.init()
 
@@ -61,10 +67,17 @@ class Menu:
                 font = pygame.font.Font("font/Super Sense.ttf", 50)
                 i = 1
                 y = 200
-                while i <= 6:
-                    i = i + 1
-                    y = y + 100
-                    screen.blit(font.render("Party", 1, (255, 255, 255)), (400, y))
+                with open('stats.csv', 'r') as file:
+                    reader = csv.reader(file, delimiter=',')
+                    for row in reader:
+                        y = y + 100
+                        screen.blit(font.render(f"{row[0]}", 1, (255, 255, 255)), (400, y))
+                        screen.blit(font.render(f"{row[1]}", 1, (255, 255, 255)), (650, y))
+                        screen.blit(font.render(f"{row[2]}", 1, (255, 255, 255)), (900, y))
+
+
+
+
 
             else: # Show start menu
                 screen.blit(difficulty_pad, (50, 160))
