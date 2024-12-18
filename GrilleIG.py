@@ -2,6 +2,8 @@ import pygame
 import sys
 from random import sample
 
+from pygame.event import event_name
+
 
 class Grid:
     def __init__(self, niveau):
@@ -88,7 +90,15 @@ BLUE = (0, 0, 255)
 
 # Grille pour les drapeaux
 flags = [[0] * CellCount for _ in range(CellCount)]
-clicked_cells = [[0] * CellCount for _ in range(CellCount)]
+clicked_cells = [[1] * CellCount for _ in range(CellCount)]
+
+
+
+input_rect = pygame.Rect(50,200,500,32)
+color = pygame.Color('lightskyblue3')
+
+
+
 
 
 
@@ -129,7 +139,7 @@ def main():
     pygame.init()
     font = pygame.font.Font(None, 30)
 
-
+    user_text = ""
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Démineur")
     clock = pygame.time.Clock()
@@ -190,16 +200,26 @@ def main():
                         pygame.time.wait(200)
                         game_screen = False
         else:
-            screen.fill(WHITE)
-            screen.blit(font.render(f"VICTOIRE score : {score()}, {grid.niveau}", 1, (255, 0, 0)), (85,100 ))
-            pygame.display.flip()
-
 
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        user_text += user_text[:-1]
+                    if event.key == pygame.K_BACKSPACE:
+                        user_text = user_text[:-1]
+                    else:
+                        user_text += event.unicode
 
+            screen.fill(WHITE)
+            screen.blit(font.render(f"VICTOIRE score : {score()}, {grid.niveau}", 1, (255, 0, 0)), (85,100 ))
+            pygame.draw.rect(screen,color,input_rect, 2)
+            text_surface = font.render(user_text, 1, (0, 0, 0))
+            screen.blit(text_surface, input_rect)
+            pygame.display.flip()
+            clock.tick(60)
 
 
 
