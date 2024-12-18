@@ -3,7 +3,7 @@ from idlelib.debugobj import dispatch
 import pygame
 import sys
 from random import sample
-
+import csv
 from pygame.event import event_name
 
 
@@ -250,8 +250,13 @@ def main():
                         user_text += user_text[:-1]
                     if event.key == pygame.K_BACKSPACE:
                         user_text = user_text[:-1]
+                    if event.key == pygame.K_RETURN:
+                        with open('stats.csv', mode='a', encoding='utf-8') as fichier_csv:
+                            writer = csv.writer(fichier_csv)
+                            writer.writerow([user_text, score(), grid.niveau])
                     else:
                         user_text += event.unicode
+
 
             screen.fill(WHITE)
             screen.blit(font.render(f"VICTOIRE score : {score()}, {grid.niveau}, {user_text}", 1, (255, 0, 0)), (85,100 ))
@@ -259,9 +264,6 @@ def main():
             text_surface = font.render(user_text, 1, (0, 0, 0))
             screen.blit(text_surface, input_rect)
             pygame.display.flip()
-            clock.tick(60)
-
-
 
         pygame.display.flip()
 

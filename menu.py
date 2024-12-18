@@ -64,7 +64,7 @@ class Menu:
 
             elif self.score_menu:  # Show score page
                 screen.blit(boutton_back, back_position)
-                font = pygame.font.Font("font/Super Sense.ttf", 50)
+                font = pygame.font.Font(None, 40)
                 i = 1
                 y = 200
                 with open('stats.csv', 'r') as file:
