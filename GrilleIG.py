@@ -214,7 +214,7 @@ def main():
                         user_text += event.unicode
 
             screen.fill(WHITE)
-            screen.blit(font.render(f"VICTOIRE score : {score()}, {grid.niveau}", 1, (255, 0, 0)), (85,100 ))
+            screen.blit(font.render(f"VICTOIRE score : {score()}, {grid.niveau}, {user_text}", 1, (255, 0, 0)), (85,100 ))
             pygame.draw.rect(screen,color,input_rect, 2)
             text_surface = font.render(user_text, 1, (0, 0, 0))
             screen.blit(text_surface, input_rect)
