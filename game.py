@@ -1,11 +1,12 @@
 import pygame
 import sys
 import csv
-from grid import Grid 
+from grid import Grid
+
 
 
 def start_game(w, h, mines, difficulty_name):
-    from menu import Menu
+    grid = Grid((w,h,mines))
 
     WIDTH = w * 60
     HEIGHT = h * 60
@@ -21,10 +22,11 @@ def start_game(w, h, mines, difficulty_name):
     flags = [[0] * CellCount for _ in range(CellCount)]
     clicked_cells = [[0] * CellCount for _ in range(CellCount)]
 
-    input_rect = pygame.Rect(50,200,500,32)
+    input_rect = pygame.Rect(190,600,500,32)
     color = pygame.Color('lightskyblue3')
-
-    menu = Menu()
+    titleimage = pygame.image.load("image/title.png").convert_alpha()
+    titleresized = pygame.transform.scale(titleimage, (1000, 150))
+    colorfill = (136, 162, 193)
 
     def draw_grid(screen):
         for x in range(0, WIDTH, GridSize):
@@ -41,7 +43,7 @@ def start_game(w, h, mines, difficulty_name):
                 if clicked_cells[row][col] != 1:
                     return False
         return True
-    
+
     def score():
         score_compt = 0
         for row in range(CellCount):
@@ -78,6 +80,8 @@ def start_game(w, h, mines, difficulty_name):
     image_flag = pygame.transform.scale(image_flag, (GridSize, GridSize))
     image_bomb = pygame.image.load("image/bombFR.png").convert_alpha()
     image_bomb = pygame.transform.scale(image_bomb, (GridSize, GridSize))
+    font = pygame.font.Font(None, 30)
+    user_text = ""
 
     game_screen = True
     running = True
@@ -111,21 +115,31 @@ def start_game(w, h, mines, difficulty_name):
                         print(f"Drapeau ({row}, {col})")
                     elif event.button == 1:
                         if (row, col) in mines_positions:
+
+                            print(f"Bombe ({row}, {col})")
+
                             print("Game Over")
+
+                            for r, c in mines_positions:
+                                screen.blit(image_bomb, (c * GridSize, r * GridSize))
+
+                            pygame.display.flip()
+
                             running = False
+
                         else:
-                            clicked_cells[row][col] = 1
+
+                            # Démarre la révélation des cases à partir de la case cliquée
+
+                            reveal_cells(row, col)
 
             if check_victory():
                 print("Victory!")
                 game_screen = False
-                VICTORY_WIDTH = menu.screenw
-                VICTORY_HEIGHT = menu.screenh
-                screen = pygame.display.set_mode((VICTORY_WIDTH, VICTORY_HEIGHT))
-        
-        else:
-            user_text = "d_user"
 
+                screen = pygame.display.set_mode((1920, 1080))
+
+        else:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -137,19 +151,17 @@ def start_game(w, h, mines, difficulty_name):
                     if event.key == pygame.K_RETURN:
                         with open('stats.csv', mode='a', encoding='utf-8') as fichier_csv:
                             writer = csv.writer(fichier_csv)
-                            writer.writerow([user_text, score(), menu.difficulty_name])
+                            writer.writerow([user_text, score(), difficulty_name ])
                     else:
                         user_text += event.unicode
-            
 
-            screen.fill(menu.gcolorfill)
-            screen.blit(menu.gtitle, (475, 20))
-            screen.blit(font.render(f"VICTOIRE score : {score()}, {difficulty_name}, {user_text}", 1, (255, 0, 0)), (85, 100))
+            screen.fill(colorfill)
+            screen.blit(titleresized, (475,20))
+            screen.blit(font.render(f"VICTOIRE score : {score()}, {difficulty_name}, {user_text}", 1, (255, 0, 0)), (185,500 ))
             pygame.draw.rect(screen,color,input_rect, 2)
             text_surface = font.render(user_text, 1, (0, 0, 0))
             screen.blit(text_surface, input_rect)
             pygame.display.flip()
-            clock.tick(60)
 
         pygame.display.flip()
 

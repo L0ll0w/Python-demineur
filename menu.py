@@ -83,10 +83,10 @@ class Menu:
 
             else:  # Show start menu
                 screen.blit(difficulty_pad, (50, 160))
-                
+
                 for i, (difficulty, pos) in enumerate(zip(self.difficulties.keys(), self.radio_positions)):
                     font = pygame.font.Font("font/Super Sense.ttf", 70)
-                    
+
                     pygame.draw.circle(screen, (255, 255, 255), pos, 15)
                     if i == self.selected_difficulty:
                         pygame.draw.circle(screen, (0, 255, 0), pos, 10)
@@ -127,9 +127,9 @@ class Menu:
                         elif rect_play2.collidepoint(mouse):
                             self.difficulty_name = list(self.difficulties.keys())[self.selected_difficulty]
                             w, h, mines = self.difficulties[self.difficulty_name]
-
-                            # Launch the game with the chosen difficulty
                             start_game(w, h, mines, self.difficulty_name)
+
+
 
                         for i, pos in enumerate(self.radio_positions):
                             distance = ((mouse[0] - pos[0]) ** 2 + (mouse[1] - pos[1]) ** 2) ** 0.5
