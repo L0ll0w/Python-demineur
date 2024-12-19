@@ -3,6 +3,9 @@ import sys
 import csv
 from grid import Grid
 
+import time
+
+
 
 def start_game(w, h, mines, difficulty_name):
     grid = Grid((w, h, mines))
@@ -41,6 +44,7 @@ def start_game(w, h, mines, difficulty_name):
     background_image = pygame.image.load("image/Sans_titre_275_20241219155549.png").convert()
     background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
 
+    now = time.time()
     # Initialisation de Pygame
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -96,8 +100,9 @@ def start_game(w, h, mines, difficulty_name):
         return True
 
     def score():
-        """Calculer le score basé sur les cases révélées."""
-        return sum(sum(row) for row in clicked_cells)
+        elapsed_time = time.time() - now  # Temps écoulé en secondes
+        return round(elapsed_time, 0)  # Arrondi à deux décimales
+
 
 
 
@@ -105,6 +110,7 @@ def start_game(w, h, mines, difficulty_name):
         if game_screen:
             # Dessiner l'image de fond
             screen.blit(background_image, (0, 0))
+            screen.blit(font.render(f" score : {score()}", True, (255, 0, 0)), (10, 10))
 
             # Dessiner le titre
             screen.blit(title_resized, ((WIDTH - 600) // 2, 20))
@@ -165,11 +171,11 @@ def start_game(w, h, mines, difficulty_name):
                     running = False
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_BACKSPACE:
-                        user_text = user_text[:-1]
+                        user_text += user_text[:-1]
                     elif event.key == pygame.K_RETURN:
                         with open('stats.csv', mode='a', encoding='utf-8') as file:
                             writer = csv.writer(file)
-                            writer.writerow([user_text, score(), difficulty_name])
+                            writer.writerow([user_text, score(), difficulty_name, grid.grid])
                     else:
                         user_text += event.unicode
 
