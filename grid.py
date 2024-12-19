@@ -17,20 +17,36 @@ class Grid:
         self.calc_adjc_mines()
         print(mine_pos)
         return mine_pos
-    
-    def calc_adjc_mines(self):
 
+    def calc_adjc_mines(self):
+        # Directions around each cell to check adjacent mines
         directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
-        
+
         for row in range(self.height):
             for col in range(self.width):
                 if self.grid[row][col] == -1:
-                    continue
+                    continue  # Skip mines
 
                 adjc_mines = 0
+                # Check adjacent cells for mines
                 for dr, dc in directions:
                     new_row, new_col = row + dr, col + dc
                     if 0 <= new_row < self.height and 0 <= new_col < self.width:
-                        if self.grid[new_row][new_col] == -1: # Checking if mine
+                        if self.grid[new_row][new_col] == -1:  # If there's a mine
                             adjc_mines += 1
                 self.grid[row][col] = adjc_mines
+
+    def rebuild_grid(self, mines_positions):
+        """Reconstruire la grille après avoir déplacé les mines."""
+        # Réinitialiser la grille
+        self.grid = [[0 for _ in range(self.width)] for _ in range(self.height)]
+
+        # Placer les nouvelles mines
+        for (i, j) in mines_positions:
+            self.grid[i][j] = -1  # Représente une mine
+
+        # Calculer les mines adjacentes
+        self.calc_adjc_mines()
+
+        # Retourner la grille mise à jour
+        return self.grid
