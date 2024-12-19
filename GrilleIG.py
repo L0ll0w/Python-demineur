@@ -253,7 +253,7 @@ def main():
                     if event.key == pygame.K_RETURN:
                         with open('stats.csv', mode='a', encoding='utf-8') as fichier_csv:
                             writer = csv.writer(fichier_csv)
-                            writer.writerow([user_text, score(), grid.niveau])
+                            writer.writerow([user_text, score(), grid.niveau, grid.tableau ])
                     else:
                         user_text += event.unicode
 
