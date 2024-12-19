@@ -151,7 +151,6 @@ def start_game(w, h, mines, difficulty_name):
                             # Démarre la révélation des cases à partir de la case cliquée
 
                             reveal_cells(row, col)
-                            reveal_cells(row, col)
 
             if check_victory():
                 print("Victory!")
@@ -182,9 +181,6 @@ def start_game(w, h, mines, difficulty_name):
             text_surface = font.render(user_text, 1, (0, 0, 0))
             screen.blit(text_surface, input_rect)
             pygame.display.flip()
-                VICTORY_WIDTH = menu.screenw
-                VICTORY_HEIGHT = menu.screenh
-                screen = pygame.display.set_mode((VICTORY_WIDTH, VICTORY_HEIGHT))
 
         pygame.display.flip()
         clock.tick(60)
