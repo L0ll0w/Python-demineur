@@ -56,12 +56,19 @@ def start_game(w, h, mines, difficulty_name):
 
     # Variables
     user_text = ""
-    input_rect = pygame.Rect((WIDTH // 2) - 250, HEIGHT - 50, 500, 32)
+    input_rect = pygame.Rect((WIDTH // 2) - 250, HEIGHT - 500, 500, 32)
     color_active = pygame.Color('lightskyblue3')
+
+    valider_rect = pygame.Rect((WIDTH // 2) - 180, HEIGHT - 400, 200, 32)
+    final_score = None
+
 
     # État du jeu
     game_screen = True
     running = True
+
+
+
 
     def draw_grid():
         """Dessiner la grille centrée sur l'écran."""
@@ -101,7 +108,7 @@ def start_game(w, h, mines, difficulty_name):
 
     def score():
         elapsed_time = time.time() - now  # Temps écoulé en secondes
-        return round(elapsed_time, 0)  # Arrondi à deux décimales
+        return int(elapsed_time)
 
 
 
@@ -164,28 +171,43 @@ def start_game(w, h, mines, difficulty_name):
                 print("Victory!")
                 game_screen = False
                 screen = pygame.display.set_mode((WIDTH, HEIGHT))
+                if final_score is None:  # Vérifier si le score final n'a pas déjà été défini
+                    final_score = score()  # Fixer le score final
 
         else:
+
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_BACKSPACE:
-                        user_text += user_text[:-1]
-                    elif event.key == pygame.K_RETURN:
-                        with open('stats.csv', mode='a', encoding='utf-8') as file:
-                            writer = csv.writer(file)
-                            writer.writerow([user_text, score(), difficulty_name, grid.grid])
+                        user_text = user_text[:-1]
                     else:
                         user_text += event.unicode
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if valider_rect.collidepoint(event.pos):
+                        with open('stats.csv', mode='a', encoding='utf-8') as file:
+                            writer = csv.writer(file)
+                            if user_text == "":
+                                writer.writerow(["Anonyme", score(), difficulty_name, grid.grid])
+                            else:
+                                writer.writerow([user_text, score(), difficulty_name, grid.grid])
+                        running = False
+
 
             screen.fill(LIGHT_BLUE)
             screen.blit(title_resized, ((WIDTH - 600) // 2, 20))
-            score_text = font.render(f"VICTOIRE score : {score()}, {difficulty_name}, {user_text}", True, (255, 0, 0))
-            screen.blit(score_text, (WIDTH // 2 - 300, GRID_OFFSET_Y + CellCount * GridSize + 20))
+            score_text = font.render(f"VICTOIRE score : {final_score}, {difficulty_name}, {user_text}", True, (255, 0, 0))
+            screen.blit(score_text, (WIDTH // 2 - 300, HEIGHT-550))
             pygame.draw.rect(screen, color_active, input_rect, 2)
             text_surface = font.render(user_text, True, BLACK)
             screen.blit(text_surface, input_rect)
+            pygame.draw.rect(screen, pygame.Color('red'), valider_rect)
+            text = font.render("Valider", True, BLACK)
+            screen.blit(text, (valider_rect.x + 50, valider_rect.y + 5))  # Centrer le texte dans le bouton
+
+
 
         pygame.display.flip()
         clock.tick(60)

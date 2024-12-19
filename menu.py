@@ -50,6 +50,7 @@ class Menu:
     def __init__(self):
         self.main_menu = True
         self.score_menu = False
+        self.load_menu = False
         self.difficulties = {"Easy": (9, 9, 10), "Medium": (16, 16, 40), "Hard": (30, 16, 99)}  # Difficulty levels (w/h/mines)
         self.radio_positions = [(115, 400), (115, 500), (115, 600)]  # Difficulty buttons positions
         self.selected_difficulty = 0
@@ -74,12 +75,44 @@ class Menu:
                 i = 1
                 y = 200
                 with open('stats.csv', 'r') as file:
-                    reader = csv.reader(file, delimiter=',')
+                    reader = csv.reader(file, delimiter=',',quotechar='"')
                     for row in reader:
                         y = y + 100
+                        if not row or all(cell == '' for cell in row):
+                            continue
                         screen.blit(font.render(f"{row[0]}", 1, (255, 255, 255)), (400, y))
-                        screen.blit(font.render(f"{row[1]}", 1, (255, 255, 255)), (650, y))
-                        screen.blit(font.render(f"{row[2]}", 1, (255, 255, 255)), (900, y))
+                        screen.blit(font.render(f"{row[1]}", 1, (255, 255, 255)), (700, y))
+                        screen.blit(font.render(f"{row[2]}", 1, (255, 255, 255)), (950, y))
+            elif self.load_menu:
+                y=200
+                fontheader = pygame.font.Font("font/Super Sense.ttf", 40)
+                font = pygame.font.Font("font/Super Sense.ttf", 20)
+                i = 0
+
+
+                with open('stats.csv', 'r') as file:
+                    reader = csv.reader(file, delimiter=',',quotechar='"')
+
+
+                    for row in reader:
+                        y = y + 100
+                        if not row or all(cell == '' for cell in row):
+                            continue
+                        if i ==0:
+                            screen.blit(fontheader.render(f"{row[0]}", 1, (255, 255, 255)), (50, y))
+                            screen.blit(fontheader.render(f"{row[1]}", 1, (255, 255, 255)), (290, y))
+                            screen.blit(fontheader.render(f"{row[2]}", 1, (255, 255, 255)), (500, y))
+                            screen.blit(fontheader.render(f"{row[3]}", 1, (255, 255, 255)), (800, y))
+                            i+=1
+                        else:
+                            screen.blit(font.render(f"{row[0]}", 1, (255, 255, 255)), (50, y))
+                            screen.blit(font.render(f"{row[1]}", 1, (255, 255, 255)), (290, y))
+                            screen.blit(font.render(f"{row[2]}", 1, (255, 255, 255)), (500, y))
+                            screen.blit(font.render(f"{row[3]}", 1, (255, 255, 255)), (800, y))
+
+
+
+                screen.blit(boutton_back, back_position)
 
             else:  # Show start menu
                 screen.blit(difficulty_pad, (50, 160))
@@ -117,6 +150,9 @@ class Menu:
                         elif rect_score.collidepoint(mouse):
                             self.main_menu = False
                             self.score_menu = True
+                        elif rect_load.collidepoint(mouse):
+                            self.main_menu = False
+                            self.load_menu = True
                         elif rect_exit.collidepoint(mouse):
                             ingame = False
 
@@ -124,6 +160,7 @@ class Menu:
                         if rect_back.collidepoint(mouse):
                             self.main_menu = True
                             self.score_menu = False
+                            self.load_menu = False
                         elif rect_play2.collidepoint(mouse):
                             self.difficulty_name = list(self.difficulties.keys())[self.selected_difficulty]
                             w, h, mines = self.difficulties[self.difficulty_name]
