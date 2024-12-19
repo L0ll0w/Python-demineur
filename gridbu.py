@@ -2,21 +2,14 @@ import pygame
 import sys
 from random import sample
 
-class Grid:
-    def __init__(self, niveau):
-        self.niveau = niveau
-        self.rows, self.cols, self.mines, self.niv = self.get_dimensions_and_mines()
-        self.tableau = self.creer_tableau()
 
-    def get_dimensions_and_mines(self):
-        niveaux = {
-            "Easy": (10, 10, 0, 1),
-            "Medium": (20, 20, 40, 2),
-            "Hard": (45, 45, 99, 3),
-        }
-        if self.niveau not in niveaux:
-            raise ValueError("Veuillez choisir un niveau entre Easy, Medium ou Hard.")
-        return niveaux[self.niveau]
+class Grid:
+    def __init__(self, niveau, rows, cols, mines):
+        self.niveau = niveau
+        self.rows = rows
+        self.cols = cols
+        self.mines = mines
+        self.tableau = self.creer_tableau()
 
     def creer_tableau(self):
         tableau = [[0 for _ in range(self.cols)] for _ in range(self.rows)]
@@ -30,11 +23,11 @@ class Grid:
             print(' '.join(str(cell) for cell in ligne))
 
     def indice_mine(self):
-        tab =[]
+        tab = []
         for i in range(self.rows):
             for j in range(self.cols):
                 if self.tableau[i][j] == 'B':
-                    tab.append((i,j))
+                    tab.append((i, j))
         print(f"Position mines : {tab}")
         return tab
 
@@ -44,27 +37,18 @@ class Game:
     def __init__(self):
         self.grid = None
 
-    def demander_niveau(self):
-        while True:
-            niveau = input("Saisissez votre difficulté parmi Easy, Medium, Hard : ")
-            if niveau in ["Easy", "Medium", "Hard"]:
-                return niveau
-            print("Niveau invalide. Réessayez.")
-
-    def demarrer(self):
+    def demarrer(self, niveau, rows, cols, mines):
         try:
-            niveau = self.demander_niveau()
-            self.grid = Grid(niveau)
+            self.grid = Grid(niveau, rows, cols, mines)
             self.grid.afficher_tableau()
             return self.grid.niv
         except ValueError as e:
             print(e)
-            print("Veuillez recommencer.")
+            print("Erreur lors de l'initialisation de la grille.")
 
 
 # Initialisation du jeu
 jeu = Game()
-niv2 = jeu.demarrer()
 
 # Configuration selon le niveau
 config = {
@@ -103,9 +87,9 @@ mines_positions = jeu.grid.indice_mine()
 def check_victory():
     for row in range(CellCount):
         for col in range(CellCount):
-            if (row, col) in mines_positions and flags[row][col] != 1:
-                return False
-            if (row, col) not in mines_positions and clicked_cells[row][col] != 1:
+            if (row, col) in mines_positions:
+                continue
+            if clicked_cells[row][col] != 1:
                 return False
     return True
 
@@ -193,13 +177,16 @@ def main():
             screen.blit(font.render(f"VICTOIRE score : {score()}, {grid.niveau}", 1, (255, 0, 0)), (85,100 ))
             pygame.display.flip()
 
+
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
 
 
+
+
         pygame.display.flip()
-        clock.tick(10)
 
     pygame.quit()
     sys.exit()

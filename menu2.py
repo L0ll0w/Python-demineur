@@ -3,82 +3,77 @@ from game import start_game
 
 pygame.init()
 
-# Dimensions par défaut
-screen_width = 1920
-screen_height = 1080
+widthscreen = 1920
+heightscreen = 1080
 
-screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
-pygame.display.set_caption("Menu Principal")
+screen = pygame.display.set_mode((widthscreen, heightscreen))
+screen.fill((136, 162, 193))
 font = pygame.font.Font("font/Super Sense.ttf", 100)
+# titre = font.render("Des mineurs", 1, (255, 255, 255))
 
-# Chargement des images
+# Images
 boutton_play = pygame.image.load("image/play.png").convert_alpha()
 boutton_score = pygame.image.load("image/score.png").convert_alpha()
 boutton_exit = pygame.image.load("image/exit.png").convert_alpha()
 boutton_back = pygame.image.load("image/back.png").convert_alpha()
+boutton_playpressed = pygame.image.load("image/playpressed.png").convert_alpha()
+boutton_scorepressed = pygame.image.load("image/scorepressed.png").convert_alpha()
+boutton_exitpressed = pygame.image.load("image/exitpressed.png").convert_alpha()
+boutton_backpressed = pygame.image.load("image/backpressed.png").convert_alpha()
 difficulty_pad = pygame.image.load("image/difficultypad.png").convert_alpha()
 titleimage = pygame.image.load("image/title.png").convert_alpha()
+titleresized = pygame.transform.scale(titleimage, (1000, 150))
+
+# Images positions
+play_position = (800, 350)
+score_position = (800, 550)
+exit_position = (800, 750)
+back_position = (25, 925)
+play_position2 = (1590, 925)
+
+# interactions with the images
+rect_play = boutton_play.get_rect(topleft=play_position)
+rect_score = boutton_score.get_rect(topleft=score_position)
+rect_exit = boutton_exit.get_rect(topleft=exit_position)
+rect_back = boutton_back.get_rect(topleft=back_position)
+rect_play2 = boutton_play.get_rect(topleft=play_position2)
 
 class Menu:
     def __init__(self):
         self.main_menu = True
         self.score_menu = False
-        self.difficulties = {"Easy": (9, 9, 10), "Medium": (16, 16, 40), "Hard": (30, 16, 99)}
-        self.radio_positions = [(0, 0), (0, 0), (0, 0)]
+        self.difficulties = {"Easy": (9, 9, 10), "Medium": (16, 16, 40), "Hard": (30, 16, 99)} # Difficulty levels (w/h/mines)
+        self.radio_positions = [(115, 400), (115, 500), (115, 600)] # Difficulty buttons positions
         self.selected_difficulty = 0
-        self.update_positions(screen_width, screen_height)
 
-    def update_positions(self, width, height):
-        """Met à jour dynamiquement les positions des éléments."""
-        self.title_position = (width // 2 - 500, height // 12)
-        self.play_position = (width // 2 - 150, height // 3)
-        self.score_position = (width // 2 - 150, height // 2)
-        self.exit_position = (width // 2 - 150, int(height * 0.75))
-        self.back_position = (25, height - 100)
-        self.play_position2 = (width - 300, height - 100)
-
-        # Boutons radio pour la sélection de difficulté
-        self.radio_positions = [
-            (width // 8, height // 2 - 50),
-            (width // 8, height // 2 + 50),
-            (width // 8, height // 2 + 150),
-        ]
-
-    def display(self, screen):
-        running = True
-        while running:
+    def display(self, screen, text):
+        ingame = True
+        while ingame:
             mouse = pygame.mouse.get_pos()
-            screen.fill((136, 162, 193))  # Fond de l'écran
+            screen.fill((136, 162, 193)) # Fill the screen with a color
+            screen.blit(titleresized, (475,20))
 
-            # Ajuste les éléments selon la taille actuelle
-            screen_width, screen_height = screen.get_size()
-            self.update_positions(screen_width, screen_height)
+            if self.main_menu: # Show main menu
+                screen.blit(boutton_play, play_position)
+                screen.blit(boutton_score, score_position)
+                screen.blit(boutton_exit, exit_position)
 
-            # Affiche le titre
-            title_resized = pygame.transform.scale(titleimage, (screen_width // 2, screen_height // 10))
-            screen.blit(title_resized, self.title_position)
+            elif self.score_menu: # Show score page
+                screen.blit(boutton_back, back_position)
+                font = pygame.font.Font("font/Super Sense.ttf", 50)
+                i = 1
+                y = 200
+                while i <= 6:
+                    i = i + 1
+                    y = y + 100
+                    screen.blit(font.render("Party", 1, (255, 255, 255)), (400, y))
 
-            if self.main_menu:
-                # Affiche les boutons principaux
-                screen.blit(boutton_play, self.play_position)
-                screen.blit(boutton_score, self.score_position)
-                screen.blit(boutton_exit, self.exit_position)
-
-            elif self.score_menu:
-                # Affiche le menu des scores
-                screen.blit(boutton_back, self.back_position)
-                font_small = pygame.font.Font("font/Super Sense.ttf", 50)
-                for i in range(6):
-                    y = 200 + i * 100
-                    screen.blit(font_small.render(f"Party {i+1}", 1, (255, 255, 255)), (screen_width // 3, y))
-
-            else:
-                # Affiche le menu des difficultés
-                difficulty_pad_resized = pygame.transform.scale(difficulty_pad, (screen_width // 4, screen_height // 2))
-                screen.blit(difficulty_pad_resized, (50, 160))
-
-                font = pygame.font.Font("font/Super Sense.ttf", 70)
+            else: # Show start menu
+                screen.blit(difficulty_pad, (50, 160))
+                
                 for i, (difficulty, pos) in enumerate(zip(self.difficulties.keys(), self.radio_positions)):
+                    font = pygame.font.Font("font/Super Sense.ttf", 70)
+                    
                     pygame.draw.circle(screen, (255, 255, 255), pos, 15)
                     if i == self.selected_difficulty:
                         pygame.draw.circle(screen, (0, 255, 0), pos, 10)
@@ -86,57 +81,58 @@ class Menu:
                     label = font.render(difficulty, True, (255, 255, 255))
                     screen.blit(label, (pos[0] + 30, pos[1] - 30))
 
+                font = pygame.font.Font("font/Super Sense.ttf", 50)
+                screen.blit(font.render("Difficulty :", 1, (255, 255, 255)), (115, 250))
+                font = pygame.font.Font("font/Super Sense.ttf", 70)
                 w, h, mines = list(self.difficulties.values())[self.selected_difficulty]
-                info_font = pygame.font.Font("font/Super Sense.ttf", 50)
-                screen.blit(info_font.render(f"W = {w}", 1, (255, 255, 255)), (screen_width // 2, 200))
-                screen.blit(info_font.render(f"H = {h}", 1, (255, 255, 255)), (screen_width // 2, 300))
-                screen.blit(info_font.render(f"Mines = {mines}", 1, (255, 255, 255)), (screen_width // 2, 400))
+                screen.blit(font.render(f"W = {w}", 1, (255, 255, 255)), (600, 250))
+                screen.blit(font.render(f"H = {h}", 1, (255, 255, 255)), (900, 250))
+                screen.blit(font.render(f"Mines = {mines}", 1, (255, 255, 255)), (1200, 250))
 
-                screen.blit(boutton_back, self.back_position)
-                screen.blit(boutton_play, self.play_position2)
+                screen.blit(boutton_back, back_position)
+                screen.blit(boutton_play, play_position2)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     exit()
 
-                if event.type == pygame.VIDEORESIZE:
-                    # Redimensionne la fenêtre et les éléments
-                    screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
-
                 if event.type == pygame.MOUSEBUTTONUP:
                     if self.main_menu:
-                        if self.collide(mouse, self.play_position, boutton_play):
+                        if rect_play.collidepoint(mouse):
                             self.main_menu = False
-                        elif self.collide(mouse, self.score_position, boutton_score):
+                        elif rect_score.collidepoint(mouse):
                             self.main_menu = False
                             self.score_menu = True
-                        elif self.collide(mouse, self.exit_position, boutton_exit):
-                            running = False
+                        elif rect_exit.collidepoint(mouse):
+                            ingame = False
 
                     else:
-                        if self.collide(mouse, self.back_position, boutton_back):
+                        if rect_back.collidepoint(mouse):
                             self.main_menu = True
                             self.score_menu = False
-                        elif self.collide(mouse, self.play_position2, boutton_play):
+                        elif rect_play2.collidepoint(mouse):
+                            # start_game()
+                            print("launch game")
+                            screen.blit(font.render("LES MINEURS", 1, (255, 255, 255)), (800, 550))
                             difficulty = list(self.difficulties.keys())[self.selected_difficulty]
                             w, h, mines = self.difficulties[difficulty]
+
+                            game = Game()
+                            game.demarrer(difficulty, w, h, mines)
+
+                            # Launch the game with the difficulty parameters
                             start_game(w, h, mines)
 
                         for i, pos in enumerate(self.radio_positions):
                             distance = ((mouse[0] - pos[0]) ** 2 + (mouse[1] - pos[1]) ** 2) ** 0.5
                             if distance <= 15:
                                 self.selected_difficulty = i
+                                print(f"Difficulty selected: {list(self.difficulties.keys())[i]}")
+                                print(i)
 
             pygame.display.flip()
-
-    @staticmethod
-    def collide(mouse_pos, element_pos, image):
-        """Vérifie si la souris clique sur un élément."""
-        x, y = element_pos
-        w, h = image.get_size()
-        return x <= mouse_pos[0] <= x + w and y <= mouse_pos[1] <= y + h
-
+        pygame.quit()
 
 menu = Menu()
-menu.display(screen)
+menu.display(screen, titleresized)

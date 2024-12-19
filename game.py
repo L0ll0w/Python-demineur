@@ -1,21 +1,30 @@
 import pygame
-from grid import Grid
 import sys
+import csv
+from grid import Grid 
 
-def start_game(w, h, mines):
-    WIDTH = w * 40
-    HEIGHT = h * 40
-    GridSize = 40
+
+def start_game(w, h, mines, difficulty_name):
+    from menu import Menu
+
+    WIDTH = w * 60
+    HEIGHT = h * 60
+    GridSize = 60
     CellCount = w
-
-    grid = Grid(h, w, mines)
-    mines_positions = grid.indice_mine()
+    mines_positions = Grid((w, h, mines)).indice_mine()
 
     WHITE = (255, 255, 255)
-    BLACK = (0, 0, 0)
     GRAY = (192, 192, 192)
+    BLACK = (0, 0, 0)
+    BLUE = (0, 0, 255)
 
     flags = [[0] * CellCount for _ in range(CellCount)]
+    clicked_cells = [[0] * CellCount for _ in range(CellCount)]
+
+    input_rect = pygame.Rect(50,200,500,32)
+    color = pygame.Color('lightskyblue3')
+
+    menu = Menu()
 
     def draw_grid(screen):
         for x in range(0, WIDTH, GridSize):
@@ -24,22 +33,71 @@ def start_game(w, h, mines):
                 pygame.draw.rect(screen, GRAY, rect)
                 pygame.draw.rect(screen, BLACK, rect, 2)
 
-    def main_game():
-        pygame.init()
-        screen = pygame.display.set_mode((WIDTH, HEIGHT))
-        pygame.display.set_caption("Démineur")
-        clock = pygame.time.Clock()
+    def check_victory():
+        for row in range(CellCount):
+            for col in range(CellCount):
+                if (row, col) in mines_positions:
+                    continue
+                if clicked_cells[row][col] != 1:
+                    return False
+        return True
+    
+    def score():
+        score_compt = 0
+        for row in range(CellCount):
+            for col in range(CellCount):
+                if clicked_cells[row][col] == 1:
+                    score_compt += 1
+        return score_compt
 
-        running = True
-        while running:
+    def reveal_cells(row, col):
+        # Vérifie les limites de la grille
+        if row < 0 or row >= CellCount or col < 0 or col >= CellCount:
+            return
+
+        # Arrête la récursion si la case est déjà cliquée ou contient une bombe
+        if clicked_cells[row][col] == 1 or (row, col) in mines_positions:
+            return
+
+        # Colorie la case actuelle
+        clicked_cells[row][col] = 1
+
+        # Liste des directions pour explorer les cases adjacentes
+        directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+
+        # Révélation récursive des cases adjacentes
+        for dx, dy in directions:
+            reveal_cells(row + dx, col + dy)
+
+    pygame.init()
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    pygame.display.set_caption("Démineur")
+    clock = pygame.time.Clock()
+
+    image_flag = pygame.image.load("image/redflag.png").convert_alpha()
+    image_flag = pygame.transform.scale(image_flag, (GridSize, GridSize))
+    image_bomb = pygame.image.load("image/bombFR.png").convert_alpha()
+    image_bomb = pygame.transform.scale(image_bomb, (GridSize, GridSize))
+
+    game_screen = True
+    running = True
+
+    while running:
+        if game_screen:
             screen.fill(WHITE)
             draw_grid(screen)
 
+            font = pygame.font.Font("font/Super Sense.ttf", 20)
+            # difficulty_label = font.render(f"Difficulty: {difficulty_name}", True, (0, 0, 0))
+            # screen.blit(difficulty_label, (10, 10))
+
+            # Dessiner les drapeaux
             for row in range(CellCount):
                 for col in range(CellCount):
                     if flags[row][col] == 1:
-                        rect = pygame.Rect(col * GridSize, row * GridSize, GridSize, GridSize)
-                        pygame.draw.rect(screen, (255, 0, 0), rect)
+                        screen.blit(image_flag, (col * GridSize, row * GridSize))
+                    elif clicked_cells[row][col] == 1:
+                        pygame.draw.rect(screen, BLUE, pygame.Rect(col * GridSize, row * GridSize, GridSize, GridSize))
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -50,15 +108,50 @@ def start_game(w, h, mines):
 
                     if event.button == 3:
                         flags[row][col] = 1 - flags[row][col]
+                        print(f"Drapeau ({row}, {col})")
                     elif event.button == 1:
                         if (row, col) in mines_positions:
-                            print(f"Bombe détectée à ({row}, {col})!")
+                            print("Game Over")
                             running = False
+                        else:
+                            clicked_cells[row][col] = 1
 
+            if check_victory():
+                print("Victory!")
+                game_screen = False
+                VICTORY_WIDTH = menu.screenw
+                VICTORY_HEIGHT = menu.screenh
+                screen = pygame.display.set_mode((VICTORY_WIDTH, VICTORY_HEIGHT))
+        
+        else:
+            user_text = "d_user"
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        user_text += user_text[:-1]
+                    if event.key == pygame.K_BACKSPACE:
+                        user_text = user_text[:-1]
+                    if event.key == pygame.K_RETURN:
+                        with open('stats.csv', mode='a', encoding='utf-8') as fichier_csv:
+                            writer = csv.writer(fichier_csv)
+                            writer.writerow([user_text, score(), menu.difficulty_name])
+                    else:
+                        user_text += event.unicode
+            
+
+            screen.fill(menu.gcolorfill)
+            screen.blit(menu.gtitle, (475, 20))
+            screen.blit(font.render(f"VICTOIRE score : {score()}, {difficulty_name}, {user_text}", 1, (255, 0, 0)), (85, 100))
+            pygame.draw.rect(screen,color,input_rect, 2)
+            text_surface = font.render(user_text, 1, (0, 0, 0))
+            screen.blit(text_surface, input_rect)
             pygame.display.flip()
-            clock.tick(10)
+            clock.tick(60)
 
-        pygame.quit()
-        sys.exit()
+        pygame.display.flip()
 
-    main_game()
+    pygame.quit()
+    sys.exit()

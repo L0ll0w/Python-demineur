@@ -99,7 +99,7 @@ def main():
     clock = pygame.time.Clock()
 
     # Charger les images
-    image_flag = pygame.image.load("drapeau-rouge.png").convert_alpha()
+    image_flag = pygame.image.load("image/redflag.png").convert_alpha()
     image_flag = pygame.transform.scale(image_flag, (GridSize, GridSize))
     image_bomb = pygame.image.load("image/bombFR.png").convert_alpha()
     image_bomb = pygame.transform.scale(image_bomb, (GridSize, GridSize))
