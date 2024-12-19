@@ -15,6 +15,7 @@ class Grid:
 
         # Calculate adjacent mines for all the grid
         self.calc_adjc_mines()
+        print(mine_pos)
         return mine_pos
     
     def calc_adjc_mines(self):
