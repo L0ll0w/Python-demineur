@@ -50,7 +50,7 @@ class Menu:
     def __init__(self):
         self.main_menu = True
         self.score_menu = False
-        self.difficulties = {"Easy": (9, 9, 0), "Medium": (16, 16, 40), "Hard": (30, 16, 99)}  # Difficulty levels (w/h/mines)
+        self.difficulties = {"Easy": (9, 9, 10), "Medium": (16, 16, 40), "Hard": (30, 16, 99)}  # Difficulty levels (w/h/mines)
         self.radio_positions = [(115, 400), (115, 500), (115, 600)]  # Difficulty buttons positions
         self.selected_difficulty = 0
         self.difficulty_name = None
