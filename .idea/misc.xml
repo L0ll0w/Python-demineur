@@ -3,5 +3,9 @@
   <component name="Black">
     <option name="sdkName" value="Python 3.13" />
   </component>
+<<<<<<< HEAD
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.13" project-jdk-type="Python SDK" />
+=======
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.13 virtualenv at C:\Users\noasman\PycharmProjects\demineurs\Python-demineur\.venv (2)" project-jdk-type="Python SDK" />
+>>>>>>> 6b15e5217bd57265c0c3651fbe9b82fafb4f1960
 </project>
