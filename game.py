@@ -128,6 +128,8 @@ def start_game(w, h, mines, difficulty_name):
         if game_screen:
             # Dessiner l'image de fond
             screen.blit(background_image, (0, 0))
+            screen.blit(font.render(f" score : {score()}", True, (255, 0, 0)), (10, 10))
+
 
             # Dessiner le titre
             screen.blit(title_resized, ((WIDTH - 600) // 2, 0))
@@ -184,6 +186,8 @@ def start_game(w, h, mines, difficulty_name):
                 print("Victory!")
                 game_screen = False
                 screen = pygame.display.set_mode((WIDTH, HEIGHT))
+                if final_score is None:  # Vérifier si le score final n'a pas déjà été défini
+                    final_score = score()  # Fixer le score final
 
         else:
 
