@@ -3,6 +3,7 @@ import sys
 import csv
 from grid import Grid
 from random import sample
+import time
 
 def start_game(w, h, mines, difficulty_name):
     grid = Grid((w, h, mines))
@@ -39,8 +40,14 @@ def start_game(w, h, mines, difficulty_name):
 
     # Variables
     user_text = ""
-    input_rect = pygame.Rect((WIDTH // 2) - 250, HEIGHT - 50, 500, 32)
+    input_rect = pygame.Rect((WIDTH // 2) - 250, HEIGHT - 500, 500, 32)
     color_active = pygame.Color('lightskyblue3')
+
+    valider_rect = pygame.Rect((WIDTH // 2) - 180, HEIGHT - 400, 200, 32)
+    final_score = None
+    now = time.time()
+
+
 
     # État du jeu
     game_screen = True
@@ -97,19 +104,24 @@ def start_game(w, h, mines, difficulty_name):
         return True
 
     def score():
-        """Calculer le score basé sur les cases révélées."""
-        return sum(sum(row) for row in clicked_cells)
+        elapsed_time = time.time() - now  # Temps écoulé en secondes
+        return int(elapsed_time)
+
 
     def first_case(row, col, mines_positions):
+        # Check if the first click was on a mine
         if (row, col) in mines_positions:
             print(f"First click on the cell ({row}, {col}) contained a mine. Repositioning mines.")
             anciennes_mines = mines_positions.copy()
+            # Reposition the mines excluding the clicked cell
             mines_positions = sample(
-                [(i, j) for i in range(CellCount) for j in range(CellCount) if (i, j) != (row, col)],
-                len(mines_positions))
+                [(i, j) for i in range(CellCount) for j in range(CellCount) if (i, j) != (row, col)],len(mines_positions))  # Shuffle and select the same number of mines
+            # Print the old and new mine positions
             print(f"Old mines: {anciennes_mines}")
             print(f"New mines: {mines_positions}")
-            grid.grid = grid.rebuild_grid(mines_positions)  # Reconstruire la grille avec les nouvelles mines
+            # Rebuild the grid with the new mine positions
+            grid.grid = grid.rebuild_grid(mines_positions)  # Rebuild the grid with the new mines
+        # Return the updated mine positions
         return mines_positions
 
     while running:
@@ -118,7 +130,7 @@ def start_game(w, h, mines, difficulty_name):
             screen.blit(background_image, (0, 0))
 
             # Dessiner le titre
-            screen.blit(title_resized, ((WIDTH - 600) // 2, 20))
+            screen.blit(title_resized, ((WIDTH - 600) // 2, 0))
 
             # Dessiner la grille
             draw_grid()
@@ -174,8 +186,36 @@ def start_game(w, h, mines, difficulty_name):
                 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
         else:
-            # Code pour afficher l'écran de victoire et le score...
-            pass
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_BACKSPACE:
+                        user_text = user_text[:-1]
+                    else:
+                        user_text += event.unicode
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if valider_rect.collidepoint(event.pos):
+                        with open('stats.csv', mode='a', encoding='utf-8') as file:
+                            writer = csv.writer(file)
+                            if user_text == "":
+                                writer.writerow(["Anonyme", score(), difficulty_name, grid.grid])
+                            else:
+                                writer.writerow([user_text, score(), difficulty_name, grid.grid])
+                        running = False
+
+            screen.fill(LIGHT_BLUE)
+            screen.blit(title_resized, ((WIDTH - 600) // 2, 20))
+            score_text = font.render(f"VICTOIRE score : {final_score}, {difficulty_name}, {user_text}", True,
+                                     (255, 0, 0))
+            screen.blit(score_text, (WIDTH // 2 - 300, HEIGHT - 550))
+            pygame.draw.rect(screen, color_active, input_rect, 2)
+            text_surface = font.render(user_text, True, BLACK)
+            screen.blit(text_surface, input_rect)
+            pygame.draw.rect(screen, pygame.Color('red'), valider_rect)
+            text = font.render("Valider", True, BLACK)
+            screen.blit(text, (valider_rect.x + 50, valider_rect.y + 5))  # Centrer le texte dans le bouton
 
         pygame.display.flip()
         clock.tick(60)

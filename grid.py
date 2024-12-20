@@ -37,16 +37,17 @@ class Grid:
                 self.grid[row][col] = adjc_mines
 
     def rebuild_grid(self, mines_positions):
-        """Reconstruire la grille après avoir déplacé les mines."""
-        # Réinitialiser la grille
+        """Rebuild the grid after moving the mines."""
+        # Reset the grid
         self.grid = [[0 for _ in range(self.width)] for _ in range(self.height)]
 
-        # Placer les nouvelles mines
+        # Place the new mines
         for (i, j) in mines_positions:
-            self.grid[i][j] = -1  # Représente une mine
+            self.grid[i][j] = -1  # Represents a mine
 
-        # Calculer les mines adjacentes
+        # Calculate the adjacent mines
         self.calc_adjc_mines()
 
-        # Retourner la grille mise à jour
+        # Return the updated grid
         return self.grid
+
