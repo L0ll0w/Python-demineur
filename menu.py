@@ -80,18 +80,15 @@ class Menu:
                         if not row or all(cell == '' for cell in row):
                             continue
                         y = y + 100
-<<<<<<< HEAD
                         screen.blit(font.render(f"{row[0]}", 1, (255, 255, 255)), (250, y))
                         screen.blit(font.render(f"{row[1]}", 1, (255, 255, 255)), (750, y))
                         screen.blit(font.render(f"{row[2]}", 1, (255, 255, 255)), (1000, y))
 
-=======
                         if not row or all(cell == '' for cell in row):
                             continue
                         screen.blit(font.render(f"{row[0]}", 1, (255, 255, 255)), (400, y))
                         screen.blit(font.render(f"{row[1]}", 1, (255, 255, 255)), (700, y))
                         screen.blit(font.render(f"{row[2]}", 1, (255, 255, 255)), (950, y))
->>>>>>> 6b15e5217bd57265c0c3651fbe9b82fafb4f1960
             elif self.load_menu:
                 y=200
                 fontheader = pygame.font.Font("font/Super Sense.ttf", 40)
@@ -118,15 +115,12 @@ class Menu:
                             screen.blit(font.render(f"{row[1]}", 1, (255, 255, 255)), (290, y))
                             screen.blit(font.render(f"{row[2]}", 1, (255, 255, 255)), (500, y))
                             screen.blit(font.render(f"{row[3]}", 1, (255, 255, 255)), (800, y))
-<<<<<<< HEAD
                 screen.blit(boutton_back, back_position)
 
-=======
 
 
 
                 screen.blit(boutton_back, back_position)
->>>>>>> 6b15e5217bd57265c0c3651fbe9b82fafb4f1960
 
             else:  # Show start menu
                 screen.blit(difficulty_pad, (50, 160))
