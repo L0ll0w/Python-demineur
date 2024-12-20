@@ -18,7 +18,7 @@ def start_game(w, h, mines, difficulty_name):
     GRID_OFFSET_X = (WIDTH - w * GridSize) // 2
     GRID_OFFSET_Y = (HEIGHT - h * GridSize) // 2
 
-    # Couleurs
+    # Colors
     WHITE = (255, 255, 255)
     GRAY = (192, 192, 192)
     BLACK = (0, 0, 0)
