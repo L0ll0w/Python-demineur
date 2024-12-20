@@ -77,16 +77,11 @@ class Menu:
                 with open('stats.csv', 'r') as file:
                     reader = csv.reader(file, delimiter=',',quotechar='"')
                     for row in reader:
-                        if not row or all(cell == '' for cell in row):
-                            continue
-                        y = y + 100
-                        screen.blit(font.render(f"{row[0]}", 1, (255, 255, 255)), (250, y))
-                        screen.blit(font.render(f"{row[1]}", 1, (255, 255, 255)), (750, y))
-                        screen.blit(font.render(f"{row[2]}", 1, (255, 255, 255)), (1000, y))
+                        y += 100
 
                         if not row or all(cell == '' for cell in row):
                             continue
-                        screen.blit(font.render(f"{row[0]}", 1, (255, 255, 255)), (400, y))
+                        screen.blit(font.render(f"{row[0]}", 1, (255, 255, 255)), (100, y))
                         screen.blit(font.render(f"{row[1]}", 1, (255, 255, 255)), (700, y))
                         screen.blit(font.render(f"{row[2]}", 1, (255, 255, 255)), (950, y))
             elif self.load_menu:
